@@ -17,7 +17,7 @@ export const Navbar = ({ className, onSetIsOpen }: Props) => {
     <header
       id='navbar'
       className={twMerge(
-        "fixed top-0 left-0 right-0 z-30 bg-background backdrop-blur-mdc w-full h-[60px] border-b-[1px] border-b-border dark:border-b-input flex items-center justify-between px-4",
+        "fixed top-0 left-0 right-0 z-30 bg-background backdrop-blur-mdc w-full h-[60px] flex items-center justify-between px-4",
         className
       )}
     >

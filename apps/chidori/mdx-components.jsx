@@ -1,10 +1,13 @@
-import { defineMDXConfig, CodeBlock, useActiveTocItem } from "@rasenganjs/mdx";
+import { defineMDXConfig, useActiveTocItem, getIconForLanguageExtension } from "@rasenganjs/mdx";
 import { AdsCard } from "@/components/common/molecules/ads";
+import { Pagination } from "@/components/common/molecules/pagination";
+import { Note } from "@/components/common/molecules/note";
+import { cn } from "@/lib/utils"
 
 export default defineMDXConfig({
   components: {
-    p: ({ children, ...props }) => <p {...props} className="text-sm font-medium leading-relaxed [&:not(:first-child)]:mt-6 text-foreground/90">{children}</p>,
-    a: ({ children, ...props }) => <a {...props} className="text-primary font-semibold underline underline-offset-4 cursor-pointer">{children}</a>,
+    p: ({ children, ...props }) => <p {...props} className="text-[0.9rem] font-medium leading-relaxed [&:not(:first-child)]:mt-6 text-foreground/90">{children}</p>,
+    a: ({ children, ...props }) => <a {...props} className="text-foreground font-semibold underline underline-offset-4 cursor-pointer">{children}</a>,
     h1: ({ children, ...props }) => <h1 {...props} className="sm:text-3xl text-4xl font-semibold mt-4 mb-5 text-foreground">{children}</h1>,
     h2: ({ children, ...props }) => <h2 {...props} className="text-xl font-semibold mt-8 mb-3 text-foreground border-b pb-2">{children}</h2>,
     h3: ({ children, ...props }) => <h3 {...props} className="text-lg font-semibold mt-8 mb-3 text-foreground">{children}</h3>,
@@ -14,13 +17,186 @@ export default defineMDXConfig({
     ol: ({ children, ...props }) => <ol {...props} className="my-6 ml-6 list-decimal">{children}</ol>,
     ul: ({ children, ...props }) => <ul {...props} className="my-6 ml-6 list-decimal list-inside">{children}</ul>,
     li: ({ children, ...props }) => <li {...props} className="mt-2 text-sm font-medium text-foreground/90">{children}</li>,
-    code: ({ children, ...rest }) => {
-      if (rest["data-language"]) {
-        return <CodeBlock children={children} {...rest} className="bg-input/5 border-border" />
+    blockquote: ({ className, ...props }) => (
+    <blockquote
+      className={cn("mt-6 border-l-2 pl-6 italic", className)}
+      {...props}
+    />
+  ),
+     /* -------------------------------- */
+    /* Code blocks wrapper (figure)     */
+    /* -------------------------------- */
+
+    figure: ({ className, ...props }) => {
+      return (
+        <figure
+          className={`
+            my-[10px]
+            rounded-lg
+            bg-[var(--bg-code)]
+            text-[var(--fg-code)]
+            overflow-hidden
+            has-[pre[data-language]]:block
+            ${className}
+          `}
+          {...props}
+        />
+      );
+    },
+
+    /* -------------------------------- */
+    /* Code block header                */
+    /* -------------------------------- */
+
+    figcaption: ({
+      className,
+      children,
+      ...props
+    }) => {
+      const iconExtension =
+        'data-language' in props && typeof props['data-language'] === 'string'
+          ? getIconForLanguageExtension(props['data-language'])
+          : null;
+
+      return (
+        <figcaption
+          className={`
+            flex items-center gap-2
+            px-5 py-2.5
+            border-b border-b-border
+            text-sm font-bold
+            bg-(--code-block-bg)!
+            text-[var(--fg-code)]
+            [&_svg]:size-4 [&_svg]:opacity-70
+            ${className}
+          `}
+          {...props}
+        >
+          {iconExtension}
+          {children}
+        </figcaption>
+      );
+    },
+
+    /* -------------------------------- */
+    /* PRE                              */
+    /* -------------------------------- */
+
+    pre: ({ className, children, ...props }) => {
+      return (
+        <pre 
+          className={`
+            [&_span[data-highlighted-line]]:bg-(--code-block-highlight-bg)!
+            [&_span[data-highlighted-line]]:border-l-(--code-block-highlight-border)!
+            [&_span>mark[data-highlighted-chars]]:bg-(--code-block-highlight-bg)!
+            [&_span>mark[data-highlighted-chars]]:rounded-md
+            [&_span>mark[data-highlighted-chars]]:px-1
+            [&_span>mark[data-highlighted-chars]]:py-[0.2rem]
+          `} 
+          {...props}
+        >
+          {children}
+        </pre>
+      );
+    },
+
+    /* -------------------------------- */
+    /* CODE                              */
+    /* -------------------------------- */
+
+    code: ({
+      className,
+      ...props
+    }) => {
+      if (!props['data-language']) {
+        return (
+          <code
+            className="rounded-md text-[0.8rem] px-1 bg-muted"
+            {...props}
+          ></code>
+        );
       }
 
-      return <code {...rest} className="bg-muted relative rounded-md px-[0.3rem] py-[0.2rem] font-mono text-[0.85rem] break-words outline-none">{children}</code>
-    }
+      return (
+        <code
+          className={`
+            font-mono
+            font-normal
+            text-[0.9rem]
+            py-3
+            break-words
+
+            bg-(--code-block-bg)!
+
+            data-[line-numbers]:[counter-reset:line]
+
+            data-[line-numbers]:[&_span[data-line]::before]:[counter-increment:line]
+            data-[line-numbers]:[&_span[data-line]::before]:content-[counter(line)]
+            data-[line-numbers]:[&_span[data-line]::before]:inline-block
+            data-[line-numbers]:[&_span[data-line]::before]:w-[2ch]
+            data-[line-numbers]:[&_span[data-line]::before]:text-right
+            data-[line-numbers]:[&_span[data-line]::before]:mr-4
+            data-[line-numbers]:[&_span[data-line]::before]:opacity-70
+
+            [&>span[data-line]]:px-4
+            [&>span[data-line]]:border-l-2
+            [&>span[data-line]]:border-transparent
+
+            scrollbar-thin
+            scrollbar-thumb-[var(--muted)]
+            scrollbar-track-transparent
+
+            [&::-webkit-scrollbar]:w-[6px]
+            [&::-webkit-scrollbar]:h-[6px]
+            [&::-webkit-scrollbar-track]:bg-transparent
+            [&::-webkit-scrollbar-thumb]:bg-[var(--muted)]
+            [&::-webkit-scrollbar-thumb]:rounded-full
+
+            ${className}
+          `}
+          {...props}
+        />
+      );
+    },
+
+    table: ({ className, ...props }) => (
+      <div className="no-scrollbar my-6 w-full overflow-y-auto rounded-xl border">
+        <table
+          className={cn(
+            "relative w-full overflow-hidden border-none text-sm [&_tbody_tr:last-child]:border-b-0",
+            className
+          )}
+          {...props}
+        />
+      </div>
+    ),
+    tr: ({ className, ...props }) => (
+      <tr className={cn("m-0 border-b", className)} {...props} />
+    ),
+    th: ({ className, ...props }) => (
+      <th
+        className={cn(
+          "px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right",
+          className
+        )}
+        {...props}
+      />
+    ),
+    td: ({ className, ...props }) => (
+      <td
+        className={cn(
+          "px-4 py-2 text-left whitespace-nowrap [&[align=center]]:text-center [&[align=right]]:text-right",
+          className
+        )}
+        {...props}
+      />
+    ),
+
+    /* -------------------------------- */
+    /* Custom Components                */
+    /* -------------------------------- */
+    Note,
+    Pagination
   },
 
   toc: (toc) => {
@@ -30,9 +206,9 @@ export default defineMDXConfig({
     });
 
     return (
-      <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto hidden xl:flex flex-col gap-8 hide-scrollbar pr-8 pb-20">
+      <div className="sticky w-[300px] top-4 max-h-[calc(100vh-2rem)] overflow-y-auto hidden xl:flex flex-col gap-8 hide-scrollbar pb-20">
         <div className="mt-12">
-          <h2 className="text-xs font-semibold mt-0 mb-2 text-foreground/50">
+          <h2 className="text-xs font-semibold mt-0 mb-2 text-foreground/80">
             On This Page
           </h2>
           <ul className="list-inside text-xs font-semibold text-foreground/10 border-b pb-4">
@@ -43,8 +219,8 @@ export default defineMDXConfig({
                     href={`#${item.anchor.id}`}
                     className={
                       activeId === item.anchor.id
-                        ? 'text-primary underline underline-offset-4 font-semibold'
-                        : 'cursor-pointer text-foreground/70 hover:underline'
+                        ? 'text-foreground font-bold'
+                        : 'cursor-pointer text-foreground/70'
                     }
                   >
                     {item.anchor.text}
@@ -58,8 +234,8 @@ export default defineMDXConfig({
                           href={`#${child.anchor.id}`}
                           className={
                             activeId === child.anchor.id
-                              ? 'underline underline-offset-4 text-primary'
-                              : 'cursor-pointer text-foreground/70 hover:underline'
+                              ? 'text-foreground font-bold'
+                              : 'cursor-pointer text-foreground/70'
                           }
                         >
                           {child.anchor.text}
@@ -75,6 +251,22 @@ export default defineMDXConfig({
           <AdsCard />
         </div>
       </div>
+    );
+  },
+
+  /* -------------------------------- */
+  /* Layout                            */
+  /* -------------------------------- */
+
+  layout: ({ children, toc }) => {
+    return (
+      <section className="px-10 py-10 flex gap-10">
+        <div className="w-full flex flex-col items-center">
+          <div className="max-w-[600px]">{children}</div>
+        </div>
+
+        {toc && toc}
+      </section>
     );
   },
 });

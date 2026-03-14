@@ -5,74 +5,204 @@ metadata:
 toc: true
 ---
 
-# Changelog
 
-## February 2026 — Turning Rasengan UI into an Open Source project
+# @rasenganjs/kage-demo
 
-Rasengan UI officially becomes **open source and free for everyone**.
+`@rasenganjs/kage-demo` is an **official demonstration package** of the Rasengan.js ecosystem.
 
-This marks a major shift in direction: Rasengan UI is now distributed as a **shadcn-compatible component registry**, allowing developers to copy components directly into their codebase with full ownership.
+Its goal is to **showcase the core features of Rasengan.js in real-world scenarios**, acting as both:
 
-Key changes:
-
-* Transition to an open-source model (MIT license)
-* Introduction of a registry-based distribution
-* Removal of package-based installation
-* Public contribution guidelines
-* Strong focus on quality, clarity, and long-term maintainability
-
-This decision reinforces the core philosophy of Rasengan UI:
-**ownership over abstraction, simplicity over lock-in**.
-
-## November 2025 — Introduction of Kira Board Template
-
-The **Kira Board** template is introduced as a **Kanban board application**, inspired by tools like **Trello** and **Jira**.
-
-It focuses on task management and productivity workflows, showcasing:
-
-* draggable columns and cards
-* task creation and organization
-* status-based workflows
-* practical Application UI patterns
-
-Kira Board serves as a real-world example of how Rasengan UI components can be composed to build complex, interactive applications.
-
-## November 2025 — Introduction of Levelup Template
-
-The **Levelup** template is released as a **personal portfolio website**.
-
-Designed for developers and creators, it highlights:
-
-* personal branding
-* project showcases
-* experience and skills sections
-* clean, modern layouts
-
-Levelup demonstrates how Rasengan UI marketing components can be used to create a polished personal presence with minimal customization.
-
-## October 2025 — Introduction of Plus Ultra Template
-
-**Plus Ultra** is introduced as a bold and expressive **personal portfolio template**.
-
-Compared to Levelup, it explores:
-
-* more opinionated design choices
-* stronger visual identity
-* expressive typography
-* creative layouts
-
-Plus Ultra shows that Rasengan UI can support both minimal and highly personalized designs without sacrificing consistency.
+* a **learning tool** for newcomers
+* a **reference implementation** for experienced developers
 
 
-## August 2025 — Announcing Rasengan UI
+<Note title="Note">
+Think of it as the *“Kage”* of Rasengan.js: it demonstrates mastery of the framework’s techniques.
+</Note>
 
-Rasengan UI is officially announced as a **collection of reusable React UI components** built with Tailwind CSS.
+## ✨ Purpose
 
-The initial vision focuses on:
+This package is designed to:
 
-* composable UI blocks
-* developer experience
-* framework-agnostic usage
-* practical, real-world components
+* Demonstrate **Rasengan.js rendering modes**
+* Showcase **routing, layouts, and metadata**
+* Illustrate **state management with Kurama**
+* Provide **realistic examples** without boilerplate complexity
+* Serve as a **playground and inspiration** for new projects
 
-This announcement lays the foundation for what would later evolve into a registry-first, open-source ecosystem.
+It is **not meant for production use**, but as a **reference and exploration tool**.
+
+
+## 📦 Installation
+
+```bash title="Terminal" {1}
+pnpm add @rasenganjs/kage-demo
+```
+
+or
+
+```bash title="Terminal" /install/
+npm install @rasenganjs/kage-demo
+```
+
+
+## 🧩 What’s Inside
+
+The package includes ready-to-use demos for:
+
+### Rendering Modes
+
+* **SPA (Single Page Application)**
+* **SSR (Server-Side Rendering)**
+* **SSG (Static Site Generation)**
+
+Each mode is implemented with minimal configuration to highlight **how Rasengan.js behaves internally**.
+
+
+### Routing & Layouts
+
+* File-based routing
+* Nested layouts
+* Shared UI between pages
+* Error boundaries
+
+Example structure:
+
+```txt
+app/
+ ├─ layout.tsx
+ ├─ page.tsx
+ ├─ blog/
+ │   └─ page.tsx
+ └─ dashboard/
+     ├─ layout.tsx
+     └─ page.tsx
+```
+
+
+### Metadata Management
+
+Demonstrates how Rasengan.js handles metadata in **CSR and SSR contexts**:
+
+```ts title="config.ts" showLineNumbers{5}
+export const meta = {
+  title: 'Kage Demo',
+  description: 'Demonstration of Rasengan.js features'
+};
+```
+
+
+## 🐺 Kurama Integration (State Management)
+
+`@rasenganjs/kage-demo` includes **simple and advanced examples** using
+`@rasenganjs/kurama`.
+
+### Store Definition
+
+```ts title="counter.ts" showLineNumbers
+import { createStore } from '@rasenganjs/kurama';
+
+export const counterStore = createStore({
+  state: { count: 0 },
+  actions: {
+    increment(state) {
+      state.count++;
+    }
+  }
+});
+```
+
+### Usage in Components
+
+```tsx title="src/app/counter.tsx" showLineNumbers {2}
+import { useStore } from '@rasenganjs/kurama';
+import { counterStore } from './store';
+
+export function Counter() {
+  const { state, actions } = useStore(counterStore);
+
+  return (
+    <button onClick={actions.increment}>
+      Count: {state.count}
+    </button>
+  );
+}
+```
+
+This demonstrates:
+
+* Global state
+* Predictable updates
+* Framework-native integration
+
+
+## 🧪 Learning-Oriented Design
+
+The demos are intentionally:
+
+* **Readable**
+* **Minimal**
+* **Well-scoped**
+
+Each example focuses on **one concept at a time**, avoiding unnecessary abstractions.
+
+
+## 🚀 How to Use It
+
+You can use `@rasenganjs/kage-demo` to:
+
+* Explore Rasengan.js features locally
+* Copy patterns into your own projects
+* Understand recommended project structures
+* Test new framework features before release
+
+
+## 🧠 Who Is This For?
+
+* Developers **discovering Rasengan.js**
+* Contributors to the Rasengan.js ecosystem
+* Educators and workshop presenters
+* Anyone wanting a **hands-on understanding** of the framework
+
+
+## 🔗 Related Packages
+
+* `@rasenganjs/kurama` – State management
+* `@rasenganjs/query` – Data fetching
+* `@rasenganjs/i18n` – Internationalization
+* `@rasenganjs/sitemap` – SEO & sitemap generation
+
+## Features
+
+| Feature             | Description                                                  | Example                                 |
+| ------------------- | ------------------------------------------------------------ | --------------------------------------- |
+| Rendering Modes     | Demonstrates SPA, SSR, and SSG behaviors in Rasengan.js      | `/spa`, `/ssr`, `/ssg`                  |
+| File-based Routing  | Shows how routes are generated from the `app` directory      | `/blog`, `/dashboard`                   |
+| Layout System       | Demonstrates nested layouts and shared UI structures         | `app/dashboard/layout.tsx`              |
+| Metadata Management | Shows how to manage page metadata in CSR and SSR             | `export const meta = { title: "Demo" }` |
+| Kurama State        | Example of global state management with `@rasenganjs/kurama` | Counter demo                            |
+| Data Fetching       | Demonstrates async data loading patterns                     | Fetch API examples                      |
+| Error Handling      | Example of error boundaries and fallback UI                  | `error.tsx`                             |
+| Component Patterns  | Best practices for building reusable components              | UI demo components                      |
+
+
+## 🏁 Conclusion
+
+`@rasenganjs/kage-demo` is the **living documentation** of Rasengan.js.
+
+If Rasengan.js is the framework,
+**Kage Demo is the proof of mastery.**
+
+
+If you want, next we can:
+
+* turn this into **MDX for your docs website**
+* add **interactive diagrams**
+* or create a **“Kage Path” onboarding guide** for new developers 👀
+
+<Pagination 
+  previous={{
+    to: "/home",
+    label: "Home"
+  }}
+/>

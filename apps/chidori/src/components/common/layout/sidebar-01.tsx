@@ -34,7 +34,7 @@ const navigations: Navigation = [{
 export default function Sidebar({ onClose = () => { } }: { onClose?: () => void }) {
 
     return (
-        <aside className="absolute top-0 w-[276px] h-full pl-6 pr-4 py-16 pb-[100px] bg-background text-sm overflow-auto hide-scrollbar border-r border-r-border">
+        <aside className="absolute top-0 w-[350px] h-full pl-16 pr-4 py-16 pb-[100px] bg-background text-sm overflow-auto hide-scrollbar border-r border-r-border">
             {navigations.map((section, index) => (
                 <div key={section.title} className={`flex flex-col text-foreground ${index > 0 ? 'mt-10' : ''}`}>
                     <span className="text-foreground/60 text-xs font-semibold px-2">{section.title}</span>

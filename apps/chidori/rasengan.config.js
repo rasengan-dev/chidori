@@ -6,7 +6,7 @@ import mdx from '@rasenganjs/mdx/plugin';
 export default defineConfig(async () => {
   return {
     vite: {
-      plugins: [tailwindcss(), rasengan({}), mdx()],
+      plugins: [tailwindcss(), rasengan({}), mdx({ code: { keepBackground: false } })],
     },
   };
 });

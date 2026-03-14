@@ -19,7 +19,7 @@ const DocsLayout: LayoutComponent = () => {
       <ScrollRestoration target={targetRef} />
 
       <main className="w-full flex lg:w-(--main-width) h-(--main-height) mt-[50px] overflow-hidden">
-        <div className='relative w-64 h-full overflow-x-hidden overflow-y-auto hidden lg:block'>
+        <div className='relative w-[350px] h-full overflow-x-hidden overflow-y-auto hidden lg:block'>
           {/* Top blur mask */}
           <div className='absolute left-0 top-0 bg-linear-to-b from-background to-transparent from-30% w-full h-[80px] z-20'></div>
 
