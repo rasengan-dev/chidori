@@ -33,18 +33,18 @@ export default function Footer() {
               <nav className="mt-4 text-sm">
                 <ul className="flex flex-col gap-2">
                   <Link
-                    to="/docs/getting-started/introduction"
+                    to="/docs/introduction"
                     className="hover:text-primary"
                   >
                     <li>Docs</li>
                   </Link>
-                  <Link to="/packages" className="hover:text-primary">
+                  <Link to="#" className="hover:text-primary">
                     <li>Packages</li>
                   </Link>
-                  <Link to="/blog" className="hover:text-primary">
+                  <Link to="#" className="hover:text-primary">
                     <li>Blog</li>
                   </Link>
-                  <Link to="/showcase" className="hover:text-primary">
+                  <Link to="#" className="hover:text-primary">
                     <li>Showcase</li>
                   </Link>
                   <Link
@@ -73,7 +73,7 @@ export default function Footer() {
                   >
                     <li>Github</li>
                   </Link>
-                  <Link to="https://discord.com/rasengan-server">
+                  <Link to="#">
                     <li>Discord</li>
                   </Link>
                   <Link
@@ -118,10 +118,22 @@ export default function Footer() {
         </div>
 
         <div className="h-[60px] flex items-center justify-between mt-12 border-t-[1px] border-t-border">
-          <p className="text-sm">
+          {/* <p className="text-sm">
             © {new Date(Date.now()).getFullYear()} Rasengan Labs, All rights
             reserved.
-          </p>
+          </p> */}
+          <div className='flex items-center gap-4 text-sm'>
+            <div className="flex items-center gap-1">
+              Built by
+              <Link to="https://x.com/dilanekombou" target="_blank" className="font-semibold underline underline-offset-4">dilane3</Link>
+              with
+              <Link to="https://rasengan.dev" target="_blank" className="font-semibold underline underline-offset-4">Rasengan</Link>.
+            </div>
+            <div className="flex items-center gap-1">
+              The source code is available on
+              <Link to="https://github.com/rasengan-dev/chidori" target="_blank" className="font-semibold underline underline-offset-4">GitHub</Link>.
+            </div>
+          </div>
 
           <ThemeButton />
         </div>

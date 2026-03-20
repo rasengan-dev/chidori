@@ -1,293 +1,75 @@
-import {
-  NavigationData,
-  NavigationGroup,
-  NavigationItem,
-  NavigationType,
-} from '@/data/docs';
-import {
-  BookOpen,
-  Box,
-  ChevronDown,
-  FlaskConical,
-  LayoutTemplate,
-  Palette,
-  Tag,
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Link, useLocation } from 'rasengan';
-import { ComponentProps, Fragment, useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
+import { NavLink } from "rasengan"
+import { cn } from "@/lib/utils";
+import { useNavigationStore } from "@/store/navigation";
 
-type Props = {
-  className?: ComponentProps<'aside'>['className'];
-  onClose?: () => void;
+export type NavigationLink = {
+	label: string;
+	to: string;
+	level: number;
+	data?: Record<string, any>
 };
 
-export default function SidebarNavigation({ className, onClose }: Props) {
-  const [activeTab, setActiveTab] = useState<NavigationType | null>(NavigationGroup.DOCUMENTATION);
+export type NavigationSection = {
+	title: string;
+	items: (NavigationLink)[];
+};
 
-  const { pathname } = useLocation();
+export type Navigation = NavigationSection[];
 
-  const isActive = (path: string) => {
-    return pathname.includes(path);
-  };
+const navigations: Navigation = [
+	{
+		title: "Getting Started",
+		items: [
+			{ label: "Introduction", to: "/docs/introduction", level: 1 },
+			{ label: "Overview", to: "/docs/overview", level: 1 },
+			{ label: "Quick Start", to: "/docs/quick-start", level: 1 },
+		]
+	},
+	{
+		title: "Resources",
+		items: [
+			{ label: "Changelog", to: "/docs/resources/changelog", level: 1 },
+		]
+	}
+];
 
-  const sortNavigation = (nav: NavigationItem[]) => {
-    // sort by name
-    return nav.sort((a, b) => a.name.localeCompare(b.name));
-  };
+export default function Sidebar() {
+	const { toggle } = useNavigationStore();
 
-  return (
-    <aside
-      className={twMerge(
-        'w-[280px] border-r-[1px] border-r-border/60 text-foreground',
-        className
-      )}
-    >
-      <section className="lg:sticky lg:top-8 w-full h-(--mobile-main-height) lg:h-full max-h-[calc(100vh)] overflow-y-auto pb-16 lg:pt-16 p-6">
-        {/* <div className="flex flex-col gap-4 text-sm border-b-[1px] border-b-border pb-8">
-          <div className="flex items-center mb-6 gap-2">
-            <div className="size-10 rounded-md border-[1px] border-primary/40 bg-primary/10 flex items-center justify-center">
-              <Tag size={20} className="text-primary" />
-            </div>
+	return (
+		<aside className="w-[350px] h-full pl-16 pr-4 py-16 pb-[100px] bg-background text-sm overflow-auto hide-scrollbar border-r border-r-border">
+			{navigations.map((section, index) => (
+				<div key={section.title} className={`flex flex-col text-foreground ${index > 0 ? 'mt-10' : ''}`}>
+					<span className="text-foreground/60 text-xs font-semibold px-2">{section.title}</span>
+					<nav className="mt-2 flex flex-col gap-1 w-auto">
+						{section.items.map((item) => (
+							<NavLink
+								key={item.to}
+								end={item.to === '/docs'}
+								to={item.to || "#"}
+								onClick={toggle}
+								caseSensitive
+								className={"flex justify-between pr-4"}
+							>
+								{
+									({ isActive }) => (
+										<>
+											<span className={cn("inline-block text-xs font-semibold px-2 py-[6px] hover:bg-muted/70 dark:hover:bg-input/70 rounded-md cursor-pointer transition-all",
+												isActive ? "bg-primary/5 dark:bg-primary/20 text-primary borderd border-primary hover:bg-primary/5 dark:hover:bg-primary/20" : ""
+											)}>
+												{item.label}
+											</span>
+										</>
+									)
+								}
+							</NavLink>
+						))}
+					</nav>
+				</div>
+			))}
 
-            <div className="flex flex-col gap-1">
-              <span>Using stable version</span>
-              <span className="text-[12px] text-foreground/60">v1.2.0</span>
-            </div>
-          </div>
-
-          <Link to="/docs/getting-started/introduction">
-            <div
-              className={twMerge(
-                'flex items-center gap-4 hover:cursor-pointer hover:text-primary transition-all',
-                isActive('/docs')
-                  ? 'text-primary font-lexend-medium'
-                  : 'text-foreground/90'
-              )}
-              onClick={() => {
-                setActiveTab(NavigationGroup.DOCUMENTATION);
-                onClose && onClose();
-              }}
-            >
-              <BookOpen size={20} />
-              <span>Documentation</span>
-            </div>
-          </Link>
-        </div> */}
-
-        {activeTab &&
-          NavigationData[activeTab].map((nav) => {
-            return (
-              <div key={nav.id}>
-                <div className="flex items-center gap-2 text-foreground/60">
-                  {nav.icon}
-                  <span className="font-mono text-[12px]">{nav.name}</span>
-                </div>
-
-                <div className="flex flex-col w-full text-sm py-4">
-                  {nav.children &&
-                    (activeTab === NavigationGroup.DOCUMENTATION
-                      ? nav.children
-                      : sortNavigation(nav.children)
-                    ).map((item) => {
-                      if (item.visible === false) return null;
-
-                      return (
-                        <Fragment key={item.id}>
-                          <NavItem
-                            item={item}
-                            isActive={isActive}
-                            onClose={onClose}
-                          />
-                        </Fragment>
-                      );
-                    })}
-                </div>
-              </div>
-            );
-          })}
-      </section>
-    </aside>
-  );
+			{/* Vertical ligne */}
+			<div className='absolute top-0 bottom-0 right-0 w-px bg-linear-to-b from-transparent via-border to-transparent'></div>
+		</aside>
+	)
 }
-
-type NavItemProps = {
-  item: NavigationItem;
-  className?: ComponentProps<'div'>['className'];
-  isActive: (path: string) => boolean;
-  onClose?: () => void;
-};
-
-export const NavItem = ({
-  item,
-  className,
-  isActive,
-  onClose,
-}: NavItemProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    const active = hasActiveChild();
-
-    if (active) {
-      setIsOpen(true);
-    }
-  }, []);
-
-  const hasActiveChild = () => {
-    if (!item.children) return false;
-
-    return item.children.some((item) => isActive(item.link ?? '#nothing'));
-  };
-
-  const sortNavigation = (nav: NavigationItem[]) => {
-    if (pathname.includes('/docs')) {
-      return nav;
-    } else if (pathname.includes('/packages')) {
-      // sort by name
-      return nav.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    // sort by name
-    return nav.sort((a, b) => a.name.localeCompare(b.name));
-  };
-
-  return item.link ? (
-    <Link to={item.link} onClick={() => onClose && onClose()}>
-      <div
-        className={twMerge(
-          'flex items-center justify-between pl-4 py-1 border-l-[1px] border-l-border  cursor-pointer hover:text-primary/80 hover:border-l-primary/60 transition-all duration-300',
-          className,
-          isActive(item.link)
-            ? 'text-primary border-l-primary hover:text-primary hover:border-l-primary font-lexend-medium'
-            : 'text-foreground/90',
-          item.isComingSoon && 'text-foreground/40 hover:text-foreground/40'
-        )}
-        onClick={() => setIsOpen((prev) => !prev)}
-      >
-        {item.isBeta ? (
-          <div className="flex items-center gap-2">
-            <span>{item.name}</span>
-            <FlaskConical size={16} className="text-green-500" />
-          </div>
-        ) : (
-          <span>{item.name}</span>
-        )}
-
-        {item.isNew && (
-          <span className="text-[10px] text-primary-foreground bg-primary px-2 py-1 rounded-full">
-            New
-          </span>
-        )}
-
-        {item.isComingSoon && (
-          <span className="text-[10px] text-primary-foreground bg-orange-500 px-2 py-1 rounded-full">
-            Coming Soon
-          </span>
-        )}
-
-        {item.children && item.children.length > 0 && (
-          <ChevronDown
-            size={16}
-            className={twMerge(
-              'transition-all duration-300',
-              isOpen ? '' : '-rotate-90'
-            )}
-          />
-        )}
-      </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            key={item.id}
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            variants={{
-              open: { height: 'auto' },
-              collapsed: { height: 0 },
-            }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="overflow-hidden"
-          >
-            {item.children &&
-              sortNavigation(item.children).map((item) => {
-                if (item.visible === false) return null;
-
-                return (
-                  <NavItem
-                    key={item.id}
-                    item={item}
-                    className={item.level === 2 ? '' : 'pl-8'}
-                    isActive={isActive}
-                    onClose={onClose}
-                  />
-                );
-              })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </Link>
-  ) : (
-    <div>
-      <div
-        className={twMerge(
-          'flex items-center justify-between pl-4 py-1 border-l-[1px] border-l-border text-foreground/90 cursor-pointer hover:text-primary/80 hover:border-l-primary/60 transition-all',
-          className,
-          hasActiveChild()
-            ? 'text-primary border-l-primary hover:text-primary hover:border-l-primary font-lexend-medium'
-            : 'text-foreground/90'
-        )}
-        onClick={() => setIsOpen((prev) => !prev)}
-      >
-        <span>{item.name}</span>
-
-        {item.children && item.children.length > 0 && (
-          <ChevronDown
-            size={16}
-            className={twMerge(
-              'transition-all duration-300',
-              isOpen ? '' : '-rotate-90'
-            )}
-          />
-        )}
-      </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            key={item.id}
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            variants={{
-              open: { height: 'auto' },
-              collapsed: { height: 0 },
-            }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="overflow-hidden"
-          >
-            {item.children &&
-              sortNavigation(item.children).map((item) => {
-                if (item.visible === false) return null;
-
-                return (
-                  <NavItem
-                    key={item.id}
-                    item={item}
-                    className={item.level === 2 ? '' : 'pl-8'}
-                    isActive={isActive}
-                    onClose={onClose}
-                  />
-                );
-              })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};

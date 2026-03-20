@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { createStore as create } from '@rasenganjs/kurama';
 
 type State = {
   isOpen: boolean;

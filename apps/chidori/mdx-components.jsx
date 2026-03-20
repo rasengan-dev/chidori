@@ -1,4 +1,5 @@
 import { defineMDXConfig, useActiveTocItem, getIconForLanguageExtension } from "@rasenganjs/mdx";
+import { Link } from "rasengan";
 import { AdsCard } from "@/components/common/molecules/ads";
 import { Pagination } from "@/components/common/molecules/pagination";
 import { Note } from "@/components/common/molecules/note";
@@ -88,7 +89,7 @@ export default defineMDXConfig({
           className={`
             [&_span[data-highlighted-line]]:bg-(--code-block-highlight-bg)!
             [&_span[data-highlighted-line]]:border-l-(--code-block-highlight-border)!
-            [&_span>mark[data-highlighted-chars]]:bg-(--code-block-highlight-bg)!
+            [&_span>mark[data-highlighted-chars]]:bg-(--code-block-highlight-border)/20!
             [&_span>mark[data-highlighted-chars]]:rounded-md
             [&_span>mark[data-highlighted-chars]]:px-1
             [&_span>mark[data-highlighted-chars]]:py-[0.2rem]
@@ -196,7 +197,8 @@ export default defineMDXConfig({
     /* Custom Components                */
     /* -------------------------------- */
     Note,
-    Pagination
+    Pagination,
+    Link
   },
 
   toc: (toc) => {
@@ -262,7 +264,7 @@ export default defineMDXConfig({
     return (
       <section className="px-10 py-10 flex gap-10">
         <div className="w-full flex flex-col items-center">
-          <div className="max-w-[600px]">{children}</div>
+          <div className="max-w-[600px] w-full">{children}</div>
         </div>
 
         {toc && toc}

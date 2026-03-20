@@ -1,4 +1,3 @@
-import React from 'react';
 import { Outlet, LayoutComponent } from 'rasengan';
 import { Navbar } from '@/components/common/layout/navbar';
 import { useTheme } from '@rasenganjs/theme';
@@ -8,9 +7,12 @@ const RootLayout: LayoutComponent = () => {
   const { isDark } = useTheme();
 
   return (
-    <section className={cn('bg-background text-foreground font-raleway', isDark && "dark")}>
+    <section className={cn('w-full h-full text-foreground font-raleway', isDark && "dark")}>
       <Navbar />
-      <Outlet />
+
+      <main className='w-full h-full bg-background'>
+        <Outlet />
+      </main>
     </section>
   );
 };
