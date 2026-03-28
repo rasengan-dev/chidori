@@ -1,6 +1,6 @@
 current_branch=$(git symbolic-ref --short HEAD)
 
-if [ "$current_branch" = "main" ]; then
-    echo "Error: You are not allowed to push to main branch"
+if [ "$current_branch" = "master" ]; then
+    echo "Error: You are not allowed to push to master branch"
   exit 1
 fi
