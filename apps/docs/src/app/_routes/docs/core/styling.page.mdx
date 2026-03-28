@@ -1,0 +1,548 @@
+---
+metadata:
+  title: Styling | Core
+  description: Change the color theme of your website easily
+toc: true
+---
+
+# Styling
+
+Chidori is using [Shadcn UI](https://ui.shadcn.com) as a component registry powered by [Tailwind CSS](https://tailwindcss.com). This combination provides a robust styling system with excellent developer experience and consistent design patterns.
+
+## Shadcn UI Configuration
+
+### Components Setup
+
+The `components.json` file configures Shadcn UI with the following settings:
+
+```json title="components.json"
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/index.css",
+    "baseColor": "zinc",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  }
+}
+```
+
+### Key Configuration Options
+
+- **Style**: `"new-york"` - Modern, clean design system
+- **Base Color**: `"zinc"` - Neutral color palette
+- **CSS Variables**: `true` - Enables dynamic theming
+- **Icon Library**: `"lucide"` - Consistent icon set
+- **Aliases**: Simplified import paths for better DX
+
+## Tailwind CSS Integration
+
+### Base Styles
+
+The main stylesheet imports Tailwind CSS and additional utilities:
+
+```css title="src/styles/index.css" showLineNumbers
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+```
+
+### Custom Variants
+
+Chidori uses custom variants for enhanced styling:
+
+```css title="src/styles/index.css"
+@custom-variant dark (&:is(.dark *));
+```
+
+This allows you to write:
+```css
+@variant dark {
+  .custom-component {
+    @apply bg-gray-800 text-white;
+  }
+}
+```
+
+Instead of:
+```css
+.dark .custom-component {
+  @apply bg-gray-800 text-white;
+}
+```
+
+## Color System
+
+### CSS Variables Structure
+
+Chidori uses a comprehensive CSS variable system defined in `:root`:
+
+```css title="src/styles/index.css" showLineNumbers
+:root {
+  /* Core Colors */
+  --background: oklch(100% 0 0);
+  --foreground: oklch(20.57% 0.0705 259.3);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  
+  /* Primary Colors */
+  --primary: oklch(0.6185 0.2069 259.11);
+  --primary-foreground: oklch(100% 0 0);
+  
+  /* Secondary Colors */
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  
+  /* Muted Colors */
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  
+  /* Accent Colors */
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  
+  /* Status Colors */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  
+  /* Border & Input */
+  --border: oklch(89.58% 0.0055 259.7);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+}
+```
+
+### Chart Colors
+
+ predefined chart colors for data visualization:
+
+```css title="src/styles/index.css"
+:root {
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+}
+```
+
+### Sidebar Colors
+
+Dedicated color variables for sidebar components:
+
+```css title="src/styles/index.css"
+:root {
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+```
+
+### Code Block Colors
+
+Specialized colors for syntax highlighting:
+
+```css title="src/styles/index.css"
+:root {
+  --code-highlight-bg: oklch(0.2002 0 0);
+  --code-block-bg: oklch(0.9791 0 0);
+  --code-block-highlight-bg: oklch(0.9612 0 0);
+  --code-block-highlight-border: oklch(0.7668 0 0);
+}
+```
+
+## Dark Theme Management
+
+### Dark Mode Variables
+
+The `.dark` class overrides all color variables for dark theme:
+
+```css title="src/styles/index.css" showLineNumbers
+.dark {
+  /* Core Colors */
+  --background: oklch(6.253% 0.0101 278.3);
+  --foreground: oklch(83.18% 0.0356 264.9);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  
+  /* Primary Colors */
+  --primary: oklch(0.6185 0.2069 259.11);
+  --primary-foreground: oklch(100% 0 0);
+  
+  /* Secondary Colors */
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  
+  /* Muted Colors */
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  
+  /* Accent Colors */
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  
+  /* Status Colors */
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  
+  /* Border & Input */
+  --border: oklch(0.23 0.0202 275.67);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+}
+```
+
+### Theme Switching Implementation
+
+Chidori used `@rasenganjs/theme` package for theme management.
+
+<Note title="Info">
+See how it works on the <Link to="https://www.rasengan.dev/packages/theme" target="_blank">official documentation</Link> of Rasengan.js
+</Note>
+
+## Custom Colors
+
+### Using OKLCH Color Space
+
+Chidori uses OKLCH for better color consistency:
+
+```css title="Custom Color Example"
+:root {
+  --custom-primary: oklch(0.6185 0.2069 259.11);
+  --custom-secondary: oklch(0.97 0 0);
+}
+```
+
+### Adding New Color Schemes
+
+Create custom color palettes:
+
+```css title="src/styles/index.css"
+:root {
+  /* Custom Brand Colors */
+  --brand-blue: oklch(0.6 0.2 240);
+  --brand-purple: oklch(0.6 0.2 280);
+  --brand-pink: oklch(0.6 0.2 340);
+  
+  /* Semantic Colors */
+  --success: oklch(0.6 0.15 160);
+  --warning: oklch(0.8 0.15 60);
+  --error: oklch(0.6 0.2 20);
+}
+
+.dark {
+  --brand-blue: oklch(0.7 0.15 240);
+  --brand-purple: oklch(0.7 0.15 280);
+  --brand-pink: oklch(0.7 0.15 340);
+  
+  --success: oklch(0.7 0.1 160);
+  --warning: oklch(0.9 0.1 60);
+  --error: oklch(0.7 0.15 20);
+}
+```
+
+## Typography
+
+### Font Configuration
+
+Chidori uses Geist and Raleway fonts:
+
+```css title="src/styles/index.css"
+@theme inline {
+  /* Fonts */
+  --font-sans: Geist, sans-serif;
+  --font-raleway: Raleway, sans-serif;
+}
+```
+
+### Using Custom Fonts
+
+Apply fonts in your components:
+
+```tsx title="Typography Example"
+export function Typography() {
+  return (
+    <div>
+      <h1 className="font-sans text-4xl">Geist Font</h1>
+      <p className="font-raleway text-lg">Raleway Font</p>
+    </div>
+  );
+}
+```
+
+## Layout Variables
+
+### Custom Height Variables
+
+Predefined height variables for consistent layouts:
+
+```css title="src/styles/index.css"
+@theme inline {
+  /* Width and height */
+  --hero-height: calc(100vh - 120px);
+  --mobile-main-height: calc(100vh - 110px);
+  --sidebar-height: calc(100vh - 120px);
+  
+  /* Measurement Documentation */
+  --main-height: calc(100vh - 50px);
+}
+```
+
+### Using Layout Variables
+
+Use these variables in your components:
+
+```css title="Layout Example"
+.hero-section {
+  height: var(--hero-height);
+}
+
+.mobile-main {
+  height: var(--mobile-main-height);
+}
+
+.sidebar {
+  height: var(--sidebar-height);
+}
+```
+
+## Component Styling
+
+### Using Shadcn Components
+
+Import and use Shadcn components with custom styling:
+
+```tsx title="Button Example"
+import { Button } from '@/components/ui/button';
+
+export function CustomButton() {
+  return (
+    <Button 
+      variant="default"
+      className="bg-primary text-primary-foreground hover:bg-primary/90"
+    >
+      Click me
+    </Button>
+  );
+}
+```
+
+### Custom Component Styling
+
+Create custom components using Tailwind utilities:
+
+```tsx title="Custom Card Component"
+export function CustomCard({ children, className }: { 
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn(
+      "rounded-lg border bg-card text-card-foreground shadow-sm",
+      className
+    )}>
+      {children}
+    </div>
+  );
+}
+```
+
+## Advanced Styling
+
+### Responsive Design
+
+Use Tailwind's responsive utilities:
+
+```tsx title="Responsive Example"
+export function ResponsiveComponent() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="col-span-1 md:col-span-2 lg:col-span-1">
+        Responsive content
+      </div>
+    </div>
+  );
+}
+```
+
+### Animation with tw-animate-css
+
+Leverage additional animation utilities:
+
+```tsx title="Animation Example"
+export function AnimatedComponent() {
+  return (
+    <div className="animate-fade-in animate-slide-up">
+      Animated content
+    </div>
+  );
+}
+```
+
+### Custom Utilities
+
+Add custom utility classes:
+
+```css title="src/styles/index.css"
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+```
+
+## Best Practices
+
+### 1. Consistent Color Usage
+
+Always use CSS variables for colors:
+
+```tsx
+// ✅ Good
+<div className="bg-card text-card-foreground">
+
+// ❌ Avoid
+<div className="bg-white text-black">
+```
+
+### 2. Semantic Color Naming
+
+Use semantic names instead of literal colors:
+
+```css
+/* ✅ Good */
+--success: oklch(0.6 0.15 160);
+--warning: oklch(0.8 0.15 60);
+
+/* ❌ Avoid */
+--green: oklch(0.6 0.15 160);
+--yellow: oklch(0.8 0.15 60);
+```
+
+### 3. Component Composition
+
+Compose components for better maintainability:
+
+```tsx title="Component Composition"
+export function CardHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col space-y-1.5 p-6">
+      {children}
+    </div>
+  );
+}
+
+export function Card({ children, className }: { 
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)}>
+      {children}
+    </div>
+  );
+}
+```
+
+### 4. Theme-Aware Components
+
+Create components that adapt to theme changes:
+
+```tsx title="Theme-Aware Component"
+export function ThemeAwareComponent() {
+  return (
+    <div className="bg-background text-foreground border-border">
+      <h2 className="text-primary">Primary heading</h2>
+      <p className="text-muted-foreground">Muted text</p>
+      <div className="bg-card border-border">
+        Card content
+      </div>
+    </div>
+  );
+}
+```
+
+## Customization Examples
+
+### Brand Color Customization
+
+Override the primary color scheme:
+
+```css title="Custom Brand Colors"
+:root {
+  --primary: oklch(0.65 0.25 220); /* Blue brand */
+  --primary-foreground: oklch(100% 0 0);
+}
+
+.dark {
+  --primary: oklch(0.7 0.2 220); /* Lighter blue in dark */
+  --primary-foreground: oklch(100% 0 0);
+}
+```
+
+### Custom Component Theme
+
+Create themed variants for components:
+
+```tsx title="Themed Button"
+export function ThemedButton({ variant = 'default', ...props }) {
+  const variants = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90",
+    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+    outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+    ghost: "hover:bg-accent hover:text-accent-foreground",
+    link: "text-primary underline-offset-4 hover:underline",
+  };
+
+  return (
+    <Button 
+      className={variants[variant]}
+      {...props}
+    />
+  );
+}
+```
+
+<Note title="Info">
+Chidori's styling system is built for extensibility. You can easily add new colors, modify existing ones, or create entirely new themes while maintaining consistency across your application.
+</Note>
+
+<Pagination 
+  previous={{
+    to: "/docs/core/configuration",
+    label: "Configuration"
+  }}
+  next={{
+    to: "/docs/core/deployment",
+    label: "Deployment"
+  }}
+/>

@@ -1,0 +1,704 @@
+---
+metadata:
+  title: Configuration | Core
+  description: Configure your Chidori application
+toc: true
+---
+
+# Configuration
+
+The `mdx-components.jsx` file is the heart of Chidori's content presentation system. It defines how your MDX content is rendered, allowing you to customize typography, code blocks, tables, and add custom components throughout your documentation.
+
+<Note title="Info">
+All the example below will only use `TailwindCSS` for styling purpose.
+</Note>
+
+## Understanding MDX Components
+
+### Basic Structure
+
+The configuration file uses `defineMDXConfig` from `@rasenganjs/mdx` to create a comprehensive setup:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+import { defineMDXConfig } from "@rasenganjs/mdx";
+
+export default defineMDXConfig({
+  components: {
+    // Your custom component mappings here
+  },
+  toc: (toc) => {
+    // Table of contents configuration
+  },
+  layout: ({ children, toc }) => {
+    // Layout configuration
+  },
+});
+```
+
+## Typography Configuration
+
+### Text Elements
+
+Configure how basic text elements are rendered:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    // Paragraphs
+    p: ({ children, ...props }) => (
+      <p {...props} className="text-[0.9rem] font-medium leading-relaxed [&:not(:first-child)]:mt-6 text-foreground/90">
+        {children}
+      </p>
+    ),
+
+    // Links
+    a: ({ children, ...props }) => (
+      <a {...props} className="text-foreground font-semibold underline underline-offset-4 cursor-pointer">
+        {children}
+      </a>
+    ),
+
+    // Lists
+    ol: ({ children, ...props }) => (
+      <ol {...props} className="my-6 ml-6 list-decimal">{children}</ol>
+    ),
+    
+    ul: ({ children, ...props }) => (
+      <ul {...props} className="my-6 ml-6 list-decimal list-inside">{children}</ul>
+    ),
+    
+    li: ({ children, ...props }) => (
+      <li {...props} className="mt-2 text-sm font-medium text-foreground/90">{children}</li>
+    ),
+
+    // Blockquotes
+    blockquote: ({ className, ...props }) => (
+      <blockquote
+        className={cn("mt-6 border-l-2 pl-6 italic", className)}
+        {...props}
+      />
+    ),
+  },
+});
+```
+
+### Heading Hierarchy
+
+Configure consistent heading styles:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    h1: ({ children, ...props }) => (
+      <h1 {...props} className="sm:text-3xl text-4xl font-semibold mt-4 mb-5 text-foreground">
+        {children}
+      </h1>
+    ),
+    
+    h2: ({ children, ...props }) => (
+      <h2 {...props} className="text-xl font-semibold mt-8 mb-3 text-foreground border-b pb-2">
+        {children}
+      </h2>
+    ),
+    
+    h3: ({ children, ...props }) => (
+      <h3 {...props} className="text-lg font-semibold mt-8 mb-3 text-foreground">
+        {children}
+      </h3>
+    ),
+    
+    h4: ({ children, ...props }) => (
+      <h4 {...props} className="text-md font-medium mt-8 mb-3 text-foreground">
+        {children}
+      </h4>
+    ),
+    
+    h5: ({ children, ...props }) => (
+      <h5 {...props} className="text-md font-medium mt-8 mb-3 text-foreground">
+        {children}
+      </h5>
+    ),
+    
+    h6: ({ children, ...props }) => (
+      <h6 {...props} className="text-md font-medium mt-8 mb-3 text-foreground">
+        {children}
+      </h6>
+    ),
+  },
+});
+```
+
+## Code Block Configuration
+
+### Code Block Wrapper
+
+Configure the container for code blocks:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    figure: ({ className, ...props }) => (
+      <figure
+        className={`
+          my-[10px]
+          rounded-lg
+          bg-[var(--bg-code)]
+          text-[var(--fg-code)]
+          overflow-hidden
+          has-[pre[data-language]]:block
+          ${className}
+        `}
+        {...props}
+      />
+    ),
+  },
+});
+```
+
+### Code Block Header
+
+Add language indicators and icons to code blocks:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+import { getIconForLanguageExtension } from "@rasenganjs/mdx";
+
+export default defineMDXConfig({
+  components: {
+    figcaption: ({ className, children, ...props }) => {
+      const iconExtension = 
+        'data-language' in props && typeof props['data-language'] === 'string'
+          ? getIconForLanguageExtension(props['data-language'])
+          : null;
+
+      return (
+        <figcaption
+          className={`
+            flex items-center gap-2
+            px-5 py-2.5
+            border-b border-b-border
+            text-sm font-bold
+            bg-(--code-block-bg)!
+            text-[var(--fg-code)]
+            [&_svg]:size-4 [&_svg]:opacity-70
+            ${className}
+          `}
+          {...props}
+        >
+          {iconExtension}
+          {children}
+        </figcaption>
+      );
+    },
+  },
+});
+```
+
+### Code Content with Copy Functionality
+
+Implement copy-to-clipboard for code blocks:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+import { useState, useEffect } from "react";
+import { Copy, Check } from "lucide-react";
+
+export default defineMDXConfig({
+  components: {
+    code: ({ className, children, ...props }) => {
+      const [isCopied, setIsCopied] = useState(false);
+
+      useEffect(() => {
+        let timer = 0;
+        if (isCopied) {
+          timer = setTimeout(() => setIsCopied(false), 2000);
+        }
+        return () => clearTimeout(timer);
+      }, [isCopied]);
+
+      // Inline code (no language specified)
+      if (!props['data-language']) {
+        return (
+          <code
+            className="rounded-md text-[0.8rem] px-1 bg-muted"
+            {...props}
+          >
+            {children}
+          </code>
+        );
+      }
+
+      // Function to extract text content
+      function extractText(node) {
+        if (node === null || node === undefined || typeof node === "boolean") return "";
+        if (typeof node === "string" || typeof node === "number") return String(node);
+        if (Array.isArray(node)) return node.map(extractText).join("");
+        if (isValidElement(node)) return extractText(node.props.children);
+        return "";
+      }
+
+      // Copy to clipboard function
+      async function copyToClipboard(node) {
+        try {
+          const text = extractText(node);
+          await navigator.clipboard.writeText(text);
+          setIsCopied(true);
+        } catch (err) {
+          console.error("Failed to copy:", err);
+        }
+      }
+
+      return (
+        <div className="relative">
+          <code
+            className={`
+              w-full
+              font-mono
+              font-normal
+              text-[0.9rem]
+              py-3
+              break-words
+              overflow-auto
+              bg-(--code-block-bg)!
+              ${className}
+            `}
+            {...props}
+          >
+            {children}
+          </code>
+          <div 
+            onClick={() => copyToClipboard(children)} 
+            className="absolute top-2 right-2 text-foreground/70 hover:text-foreground transition-all rounded-sm p-2 hover:bg-muted"
+          >
+            {isCopied ? <Check size={14} /> : <Copy size={14} />}
+          </div>
+        </div>
+      );
+    },
+  },
+});
+```
+
+### Line Numbers and Highlighting
+
+Configure line numbers and syntax highlighting:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    pre: ({ className, children, ...props }) => (
+      <pre
+        className={`
+          [&_span[data-highlighted-line]]:bg-(--code-block-highlight-bg)!
+          [&_span[data-highlighted-line]]:border-l-(--code-block-highlight-border)!
+          [&_span>mark[data-highlighted-chars]]:bg-(--code-block-highlight-border)/20!
+          [&_span>mark[data-highlighted-chars]]:rounded-md
+          [&_span>mark[data-highlighted-chars]]:px-1
+          [&_span>mark[data-highlighted-chars]]:py-[0.2rem]
+        `}
+        {...props}
+      >
+        {children}
+      </pre>
+    ),
+
+    code: ({ className, children, ...props }) => (
+      <div className="relative">
+        <code
+          className={`
+            data-[line-numbers]:[counter-reset:line]
+            data-[line-numbers]:[&_span[data-line]::before]:[counter-increment:line]
+            data-[line-numbers]:[&_span[data-line]::before]:content-[counter(line)]
+            data-[line-numbers]:[&_span[data-line]::before]:inline-block
+            data-[line-numbers]:[&_span[data-line]::before]:w-[2ch]
+            data-[line-numbers]:[&_span[data-line]::before]:text-right
+            data-[line-numbers]:[&_span[data-line]::before]:mr-4
+            data-[line-numbers]:[&_span[data-line]::before]:opacity-70
+            [&>span[data-line]]:px-4
+            [&>span[data-line]]:border-l-2
+            [&>span[data-line]]:border-transparent
+            ${className}
+          `}
+          {...props}
+        >
+          {children}
+        </code>
+      </div>
+    ),
+  },
+});
+```
+
+## Table Configuration
+
+### Responsive Tables
+
+Configure table styling with responsive design:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+import { cn } from "@/lib/utils";
+
+export default defineMDXConfig({
+  components: {
+    table: ({ className, ...props }) => (
+      <div className="no-scrollbar my-6 w-full overflow-y-auto rounded-xl border">
+        <table
+          className={cn(
+            "relative w-full overflow-hidden border-none text-sm [&_tbody_tr:last-child]:border-b-0",
+            className
+          )}
+          {...props}
+        />
+      </div>
+    ),
+    
+    tr: ({ className, ...props }) => (
+      <tr className={cn("m-0 border-b", className)} {...props} />
+    ),
+    
+    th: ({ className, ...props }) => (
+      <th
+        className={cn(
+          "px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right",
+          className
+        )}
+        {...props}
+      />
+    ),
+    
+    td: ({ className, ...props }) => (
+      <td
+        className={cn(
+          "px-4 py-2 text-left whitespace-nowrap [&[align=center]]:text-center [&[align=right]]:text-right",
+          className
+        )}
+        {...props}
+      />
+    ),
+  },
+});
+```
+
+## Custom Components
+
+### Adding Custom Components
+
+Integrate your custom React components into MDX:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+import { Note } from "@/components/common/molecules/note";
+import { Pagination } from "@/components/common/molecules/pagination";
+import { AdsCard } from "@/components/common/molecules/ads";
+
+export default defineMDXConfig({
+  components: {
+    // Custom components
+    Note,
+    Pagination,
+    AdsCard,
+    
+    // Override Link component
+    Link: ({ className, ...props }) => (
+      <Link className={cn("text-foreground font-semibold underline underline-offset-4 cursor-pointer", className)} {...props} />
+    ),
+  },
+});
+```
+
+### Using Custom Components in MDX
+
+Once configured, use your custom components directly in MDX:
+
+```mdx title="example.page.mdx"
+# Using Custom Components
+
+<Note title="Information">
+  This is a custom note component that you can use throughout your documentation.
+</Note>
+
+<Pagination 
+  previous={{
+    to: "/docs/previous-page",
+    label: "Previous Page"
+  }}
+  next={{
+    to: "/docs/next-page", 
+    label: "Next Page"
+  }}
+/>
+```
+
+## Table of Contents Configuration
+
+### TOC Component
+
+Configure the table of contents with active tracking:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+import { useActiveTocItem } from "@rasenganjs/mdx";
+import { AdsCard } from "@/components/common/molecules/ads";
+
+export default defineMDXConfig({
+  toc: (toc) => {
+    const [activeId] = useActiveTocItem(toc, {
+      threshold: 0.5,
+      rootMargin: "0px 0px -80% 0px"
+    });
+
+    return (
+      <div className="sticky w-[300px] top-4 max-h-[calc(100vh-2rem)] overflow-y-auto hidden xl:flex flex-col gap-8 hide-scrollbar pb-20">
+        <div className="mt-12">
+          <h2 className="text-xs font-semibold mt-0 mb-2 text-foreground/80">
+            On This Page
+          </h2>
+          <ul className="list-inside text-xs font-semibold text-foreground/10 border-b pb-4">
+            {toc.map((item, index) => (
+              <>
+                <li key={index} className="py-1">
+                  <a
+                    href={`#${item.anchor.id}`}
+                    className={
+                      activeId === item.anchor.id
+                        ? 'text-foreground font-bold'
+                        : 'cursor-pointer text-foreground/70 hover:text-foreground'
+                    }
+                  >
+                    {item.anchor.text}
+                  </a>
+                </li>
+                {item.children && item.children.length > 0 && (
+                  <ul className="list-inside ml-4">
+                    {item.children.map((child) => (
+                      <li key={child.anchor.id} className="py-1">
+                        <a
+                          href={`#${child.anchor.id}`}
+                          className={
+                            activeId === child.anchor.id
+                              ? 'text-foreground font-bold'
+                              : 'cursor-pointer text-foreground/70 hover:text-foreground'
+                          }
+                        >
+                          {child.anchor.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            ))}
+          </ul>
+          
+          <AdsCard />
+        </div>
+      </div>
+    );
+  },
+});
+```
+
+## Layout Configuration
+
+### Document Layout
+
+Configure the overall layout structure:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  layout: ({ children, toc }) => (
+    <section className="px-10 py-10 flex gap-10">
+      <div className="w-full flex flex-col items-center">
+        <div className="max-w-[600px] w-full">{children}</div>
+      </div>
+      
+      {toc && toc}
+    </section>
+  ),
+});
+```
+
+## Advanced Configuration
+
+### Theme Integration
+
+Integrate with your theme system:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    code: ({ className, children, ...props }) => (
+      <div className="relative">
+        <code
+          className={`
+            bg-(--code-block-bg)!
+            text-[var(--fg-code)]
+            scrollbar-thin
+            scrollbar-thumb-[var(--muted)]
+            scrollbar-track-transparent
+            ${className}
+          `}
+          {...props}
+        >
+          {children}
+        </code>
+      </div>
+    ),
+  },
+});
+```
+
+### Responsive Design
+
+Make components responsive across devices:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  toc: (toc) => (
+    <div className="sticky w-[300px] top-4 max-h-[calc(100vh-2rem)] overflow-y-auto hidden xl:flex flex-col gap-8 hide-scrollbar pb-20">
+      {/* TOC content */}
+    </div>
+  ),
+  
+  layout: ({ children, toc }) => (
+    <section className="px-4 py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-10 flex gap-4 lg:gap-10">
+      <div className="w-full flex flex-col items-center">
+        <div className="max-w-[600px] w-full">{children}</div>
+      </div>
+      
+      {toc && toc}
+    </section>
+  ),
+});
+```
+
+## Best Practices
+
+### 1. Component Organization
+
+- Keep related components together
+- Use descriptive names for custom components
+- Document component props and usage
+
+### 2. Performance Optimization
+
+- Use `React.memo` for expensive components or just enable `React Compiler` via the <Link to="https://www.rasengan.dev/docs/optimizing/react-compiler">Sage Mode</Link> of Rasengan.js.
+- Lazy load heavy components
+- Optimize re-renders
+
+```jsx title="mdx-components.jsx" showLineNumbers
+import React from "react";
+
+const ExpensiveComponent = React.memo(({ data }) => {
+  // Expensive rendering logic
+});
+
+export default defineMDXConfig({
+  components: {
+    ExpensiveComponent,
+  },
+});
+```
+
+### 3. Accessibility
+
+- Ensure proper semantic HTML
+- Add ARIA labels where needed
+- Test keyboard navigation
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    code: ({ className, children, ...props }) => (
+      <div className="relative">
+        <code {...props}>{children}</code>
+        <button
+          onClick={() => copyToClipboard(children)}
+          aria-label="Copy code to clipboard"
+          className="absolute top-2 right-2"
+        >
+          <Copy size={14} />
+        </button>
+      </div>
+    ),
+  },
+});
+```
+
+### 4. CSS Variables
+
+Use CSS variables for consistent theming:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    figure: ({ className, ...props }) => (
+      <figure
+        className={`
+          bg-[var(--bg-code)]
+          text-[var(--fg-code)]
+          ${className}
+        `}
+        {...props}
+      />
+    ),
+  },
+});
+```
+
+## Customization Examples
+
+### Dark Mode Support
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    code: ({ className, children, ...props }) => (
+      <div className="relative">
+        <code
+          className={`
+            dark:bg-gray-800 dark:text-gray-200
+            bg-gray-100 text-gray-800
+            ${className}
+          `}
+          {...props}
+        >
+          {children}
+        </code>
+      </div>
+    ),
+  },
+});
+```
+
+### Custom Syntax Highlighting
+
+```jsx title="mdx-components.jsx" showLineNumbers
+export default defineMDXConfig({
+  components: {
+    pre: ({ className, children, ...props }) => (
+      <pre
+        className={`
+          [&_span[data-highlighted-line]]:bg-yellow-200/50
+          dark:[&_span[data-highlighted-line]]:bg-yellow-800/50
+          ${className}
+        `}
+        {...props}
+      >
+        {children}
+      </pre>
+    ),
+  },
+});
+```
+
+<Note title="Info">
+The `mdx-components.jsx` file is automatically processed by the MDX plugin configured in your `rasengan.config.js`. Make sure the MDX plugin is properly configured to use these custom components.
+</Note>
+
+<Pagination 
+  previous={{
+    to: "/docs/core/layouts",
+    label: "Layout"
+  }}
+  next={{
+    to: "/docs/core/styling",
+    label: "Styling"
+  }}
+/>

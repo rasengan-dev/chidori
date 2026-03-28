@@ -1,0 +1,121 @@
+---
+metadata:
+  title: Layout | Core
+  description: Change the look of your documentation website
+toc: true
+---
+
+# Layout
+
+Layouts in Chidori allow you to create consistent UI structures that wrap your pages. Based on Rasengan.js's layout system, you can define reusable layouts that automatically apply to pages within specific directories.
+
+## Creating Layouts
+
+### Basic Layout Structure
+
+Layouts are created using `layout.tsx` files in the `_routes` directory. They inject pages via the `Outlet` component coming from `rasengan` and provide a consistent structure.
+
+```tsx title="src/app/_routes/layout.tsx" showLineNumbers
+import { Outlet } from 'rasengan';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+
+export default function Layout() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+```
+
+### Layout Hierarchy
+
+Layouts follow the directory hierarchy, where nested layouts wrap parent layouts:
+
+```txt
+_routes/
+├── layout.tsx              # Root layout (applies to all pages)
+├── about.page.tsx          # Uses root layout
+├── docs/
+│   ├── layout.tsx          # Docs layout (wraps root layout)
+│   ├── index.page.tsx      # Uses root + docs layout
+│   └── getting-started.page.tsx  # Uses root + docs layout
+└── admin/
+    ├── layout.tsx          # Admin layout (wraps root layout)
+    └── dashboard.page.tsx  # Uses root + admin layout
+```
+
+## Layout Types
+
+### Root Layout
+
+The root layout provides the base structure for your entire application:
+
+```tsx title="src/app/_routes/layout.tsx" showLineNumbers
+import { Outlet } from 'rasengan';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+
+export default function RootLayout() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+```
+
+### Nested Layouts
+
+Layouts can be nested for complex UI structures:
+
+```tsx title="src/app/_routes/admin/layout.tsx" showLineNumbers
+import { Outlet } from "rasengan";
+import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { AdminHeader } from '@/components/admin/AdminHeader';
+import { useAuth } from '@/hooks/useAuth';
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+
+  if (!user?.isAdmin) {
+    return <div>Access denied</div>;
+  }
+
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <AdminSidebar />
+      <div className="flex-1">
+        <AdminHeader />
+        <main className="p-6">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
+```
+
+<Note title="Info">
+Learn more about `File-based routing` and how layouts work with pages from the <Link to="https://www.rasengan.dev/docs/routing/file-based-routing">Rasengan.js documentation</Link>.
+</Note>
+
+<Pagination 
+  previous={{
+    to: "/docs/core/pages",
+    label: "Pages"
+  }}
+  next={{
+    to: "/docs/core/configuration",
+    label: "Configuration"
+  }}
+/>

@@ -1,0 +1,405 @@
+---
+metadata:
+  title: Pagination | Components
+  description: Pagination component
+toc: true
+---
+
+# Pagination
+
+`Chidori` provides some pre-defined components out of the box like the `Pagination` one.
+
+Pagination is a cool way to integration navigation between pages when it comes to build documentation website. After finishing reading one page of the documentation, generally at the end we have suggestion of the next page to read.
+
+That's `pagination` and Chidori provides a cool component to handle that.
+
+## Component Code
+
+The Pagination component is located at `src/components/common/molecules/pagination.tsx` and provides navigation between documentation pages:
+
+```tsx title="src/components/common/molecules/pagination.tsx" showLineNumbers
+import { Link } from "rasengan";
+
+type Props = {
+	previous?: {
+		to: string,
+		label: string
+	},
+
+	next?: {
+		to: string,
+		label: string
+	},
+}
+
+export function Pagination({ previous, next }: Props) {
+	return (
+		<div className="w-full mt-16">
+			<div className="flex items-center justify-between pt-6">
+				{
+					previous && (
+						<Link to={previous.to} className="hover:[&_span.link]:underline underline-offset-4">
+							<div className="flex flex-col gap-2">
+								<span className="text-xs font-medium text-foreground/70">Previous</span>
+								<span className="link font-semibold text-sm text-foreground">{previous.label}</span>
+							</div>
+						</Link>
+					)
+				}
+
+				{
+					next && (
+						<Link to={next.to} className="hover:[&_span.link]:underline underline-offset-4 ml-auto">
+							<div className="flex flex-col gap-2">
+								<span className="text-xs font-medium text-foreground/70 text-right">Next</span>
+								<span className="link font-semibold text-sm text-right text-foreground">{next.label}</span>
+							</div>
+						</Link>
+					)
+				}
+			</div>
+		</div>
+	)
+}
+```
+
+### Component Structure
+
+The Pagination component consists of:
+
+- **TypeScript Props**: Strongly typed interface for `previous` and `next` navigation items
+- **Conditional Rendering**: Only shows previous/next links when data is provided
+- **Responsive Layout**: Uses flexbox with proper spacing and alignment
+- **Styling**: Tailwind CSS classes for consistent design
+- **Link Integration**: Uses Rasengan.js `Link` component for navigation
+
+### Props Interface
+
+```tsx
+type Props = {
+  previous?: {
+    to: string;      // Route path for previous page
+    label: string;    // Display text for previous page
+  },
+  next?: {
+    to: string;      // Route path for next page
+    label: string;    // Display text for next page
+  },
+}
+```
+
+## MDX Components Configuration
+
+To use the Pagination component in your MDX files, it needs to be registered in `mdx-components.jsx`:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+import { defineMDXConfig } from "@rasenganjs/mdx";
+import { Pagination } from "@/components/common/molecules/pagination";
+
+export default defineMDXConfig({
+  components: {
+    // ... other components
+    Pagination,
+  },
+  // ... other configuration
+});
+```
+
+### Registration Process
+
+1. **Import**: Import the Pagination component from its location
+2. **Register**: Add it to the `components` object in `defineMDXConfig`
+3. **Usage**: Now available in all MDX files as `<Pagination />`
+
+The registration makes the component available globally across all MDX files without requiring additional imports.
+
+## Usage in Markdown Files
+
+Once configured, you can use the Pagination component directly in your MDX files:
+
+### Basic Usage
+
+```mdx title="example.page.mdx"
+# My Page Content
+
+This is the content of my page...
+
+<Pagination 
+  previous={{
+    to: "/docs/previous-page",
+    label: "Previous Page"
+  }}
+  next={{
+    to: "/docs/next-page", 
+    label: "Next Page"
+  }}
+/>
+```
+
+### Next Only
+
+```mdx title="first-page.page.mdx"
+# First Page
+
+This is the first page in the series...
+
+<Pagination 
+  next={{
+    to: "/docs/second-page",
+    label: "Second Page"
+  }}
+/>
+```
+
+### Previous Only
+
+```mdx title="last-page.page.mdx"
+# Last Page
+
+This is the last page in the series...
+
+<Pagination 
+  previous={{
+    to: "/docs/previous-page",
+    label: "Previous Page"
+  }}
+/>
+```
+
+## Styling and Design
+
+### Visual Structure
+
+The Pagination component creates a clean navigation layout:
+
+```txt
+┌─────────────────────────────────────────────────────────┐
+│  Previous                    Next                       │
+│  ┌──────────┐                ┌───────────┐              │
+│  │ Previous │                │    Next   │              │
+│  │  Page    │                │    Page   │              │
+│  └──────────┘                └───────────┘              │
+└─────────────────────────────────────────────────────────┘
+```
+
+### CSS Classes Used
+
+- **Container**: `w-full mt-16` - Full width with top margin
+- **Flex Layout**: `flex items-center justify-between pt-6` - Horizontal layout with spacing
+- **Link Container**: `flex flex-col gap-2` - Vertical column with gap
+- **Labels**: `text-xs font-medium text-foreground/70` - Small, muted text
+- **Links**: `link font-semibold text-sm text-foreground` - Styled links
+- **Hover**: `hover:[&_span.link]:underline` - Underline on hover
+- **Alignment**: `text-right`, `ml-auto` - Right alignment for next button
+
+### Responsive Design
+
+The component is fully responsive and adapts to different screen sizes:
+
+```tsx
+// Mobile: Stacks vertically if needed
+<div className="flex items-center justify-between pt-6">
+  {/* Previous on left, Next on right */}
+</div>
+```
+
+## Best Practices
+
+### 1. Consistent Navigation
+
+Always provide both previous and next when possible for better navigation flow:
+
+```mdx
+<Pagination 
+  previous={{
+    to: "/docs/introduction",
+    label: "Introduction"
+  }}
+  next={{
+    to: "/docs/getting-started",
+    label: "Getting Started"
+  }}
+/>
+```
+
+### 2. Descriptive Labels
+
+Use clear, descriptive labels that indicate the content:
+
+```mdx
+// ✅ Good
+<Pagination 
+  previous={{
+    to: "/docs/installation",
+    label: "Installation Guide"
+  }}
+  next={{
+    to: "/docs/configuration",
+    label: "Configuration"
+  }}
+/>
+
+// ❌ Avoid
+<Pagination 
+  previous={{
+    to: "/docs/installation",
+    label: "Prev"
+  }}
+  next={{
+    to: "/docs/configuration", 
+    label: "Next"
+  }}
+/>
+```
+
+### 3. Logical Flow
+
+Ensure the navigation follows a logical content progression:
+
+```mdx
+// Logical progression: Basic → Advanced → Expert
+<Pagination 
+  previous={{
+    to: "/docs/basic-concepts",
+    label: "Basic Concepts"
+  }}
+  next={{
+    to: "/docs/advanced-techniques",
+    label: "Advanced Techniques"
+  }}
+/>
+```
+
+### 4. Route Consistency
+
+Use consistent route patterns:
+
+```mdx
+// ✅ Consistent pattern
+<Pagination 
+  previous={{
+    to: "/docs/core/project-structure",
+    label: "Project Structure"
+  }}
+  next={{
+    to: "/docs/core/pages",
+    label: "Pages"
+  }}
+/>
+
+// ❌ Inconsistent pattern
+<Pagination 
+  previous={{
+    to: "/docs/core/project-structure",
+    label: "Project Structure"
+  }}
+  next={{
+    to: "/getting-started", // Different section
+    label: "Getting Started"
+  }}
+/>
+```
+
+## Advanced Usage
+
+### Conditional Navigation
+
+Use conditional logic for dynamic navigation:
+
+```tsx title="Dynamic Pagination Component"
+import { Pagination } from '@/components/common/molecules/pagination';
+
+export function DynamicPagination({ currentPage, totalPages }) {
+  const hasNext = currentPage < totalPages;
+  const hasPrevious = currentPage > 1;
+
+  return (
+    <Pagination 
+      previous={hasPrevious ? {
+        to: `/docs/page/${currentPage - 1}`,
+        label: `Page ${currentPage - 1}`
+      } : undefined}
+      next={hasNext ? {
+        to: `/docs/page/${currentPage + 1}`,
+        label: `Page ${currentPage + 1}`
+      } : undefined}
+    />
+  );
+}
+```
+
+### Category-Based Navigation
+
+Implement category-based navigation:
+
+```mdx title="category-overview.page.mdx"
+<Pagination 
+  previous={{
+    to: "/docs/categories",
+    label: "All Categories"
+  }}
+  next={{
+    to: "/docs/categories/advanced/best-practices",
+    label: "Best Practices"
+  }}
+/>
+```
+
+## Integration Examples
+
+### Documentation Series
+
+Perfect for multi-part documentation:
+
+```mdx title="part-3.page.mdx"
+# Part 3: Advanced Topics
+
+This is the third part in our comprehensive guide...
+
+<Pagination 
+  previous={{
+    to: "/docs/guide/part-2",
+    label: "Part 2: Intermediate Topics"
+  }}
+  next={{
+    to: "/docs/guide/part-4",
+    label: "Part 4: Expert Topics"
+  }}
+/>
+```
+
+### Tutorial Navigation
+
+Ideal for step-by-step tutorials:
+
+```mdx title="step-2.page.mdx"
+# Step 2: Setting Up Your Environment
+
+Follow these steps to configure your development environment...
+
+<Pagination 
+  previous={{
+    to: "/docs/tutorial/step-1",
+    label: "Step 1: Introduction"
+  }}
+  next={{
+    to: "/docs/tutorial/step-3",
+    label: "Step 3: Creating Your First Component"
+  }}
+/>
+```
+
+<Note title="Tip">
+The Pagination component automatically handles responsive design and accessibility. The links use semantic HTML and proper ARIA attributes through the Rasengan.js Link component.
+</Note>
+
+<Pagination 
+  previous={{
+    to: "/docs/components",
+    label: "Components"
+  }}
+  next={{
+    to: "/docs/components/note",
+    label: "Note"
+  }}
+/>

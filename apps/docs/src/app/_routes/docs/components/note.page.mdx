@@ -1,0 +1,413 @@
+---
+metadata:
+  title: Note | Components
+  description: Note component for highlighting important information
+toc: true
+---
+
+# Note
+
+The Note component is a versatile callout component designed to highlight important information, warnings, tips, or any contextual content that needs special attention in your documentation.
+
+## Component Code
+
+The Note component is located at `src/components/common/molecules/note.tsx` and provides a flexible alert system:
+
+```tsx title="src/components/common/molecules/note.tsx" showLineNumbers
+type Props = {
+	title: string;
+	children: React.ReactNode;
+}
+
+export function Note({ title, children }: Props) {
+	return (
+		<div 
+			data-slot="alert" 
+			role="alert" 
+			className="relative rounded-lg px-4 py-3 text-sm grid has-[&gt;svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[&gt;svg]:gap-x-3 gap-y-0.5 items-start [&amp;&gt;svg]:size-4 [&amp;&gt;svg]:translate-y-0.5 [&amp;&gt;svg]:text-current bg-background text-foreground w-auto border md:-mx-1 mt-6" 
+			data-variant="default"
+		>
+			<div data-slot="alert-title" className="col-start-2 line-clamp-1 min-h-4 font-semibold tracking-tight">{title}</div>
+			<div data-slot="alert-description" className="w-full inline col-start-2 grid justify-items-start gap-1 text-sm [&amp;_p]:leading-relaxed text-card-foreground/80">
+				{children}
+			</div>
+		</div>
+	)
+}
+```
+
+### Component Structure
+
+The Note component consists of:
+
+- **TypeScript Props**: Simple interface with `title` and `children` properties
+- **Semantic HTML**: Uses proper `role="alert"` and data attributes
+- **Grid Layout**: CSS Grid for flexible icon and content positioning
+- **Responsive Design**: Adapts spacing and layout for different screen sizes
+- **Accessibility**: Proper ARIA attributes and semantic structure
+- **Styling**: Tailwind CSS classes with custom grid utilities
+
+### Props Interface
+
+```tsx
+type Props = {
+  title: string;           // The heading/title of the note
+  children: React.ReactNode;  // The content/message of the note
+}
+```
+
+## MDX Components Configuration
+
+To use the Note component in your MDX files, it needs to be registered in `mdx-components.jsx`:
+
+```jsx title="mdx-components.jsx" showLineNumbers
+import { defineMDXConfig } from "@rasenganjs/mdx";
+import { Note } from "@/components/common/molecules/note";
+
+export default defineMDXConfig({
+  components: {
+    // ... other components
+    Note,
+  },
+  // ... other configuration
+});
+```
+
+### Registration Process
+
+1. **Import**: Import Note component from its location
+2. **Register**: Add it to the `components` object in `defineMDXConfig`
+3. **Usage**: Now available in all MDX files as `<Note />`
+
+The registration makes the component available globally across all MDX files without requiring additional imports.
+
+## Usage in Markdown Files
+
+Once configured, you can use the Note component directly in your MDX files:
+
+### Basic Usage
+
+```mdx title="example.page.mdx"
+# My Page Content
+
+Here's some important information:
+
+<Note title="Information">
+  This is an important note that readers should pay attention to. It provides critical context or warnings about the content.
+</Note>
+
+The documentation continues after the note...
+```
+
+### Multiple Notes
+
+```mdx title="multiple-notes.page.mdx"
+# Installation Guide
+
+<Note title="Prerequisites">
+  Make sure you have Node.js 18+ and npm installed on your system before proceeding.
+</Note>
+
+## Installation Steps
+
+Follow these steps to install the application...
+
+<Note title="Important">
+  This installation guide assumes you're using a Unix-based system. Windows users may need to adjust some commands.
+</Note>
+```
+
+### With Code Blocks
+
+~~~mdx title="code-example.page.mdx"
+# Code Examples
+
+<Note title="Code Example">
+  Here's how you can implement this feature:
+
+  ```tsx
+  import { Component } from './component';
+
+  export function MyComponent() {
+    return <div>Hello World</div>;
+  }
+  ```
+
+  Remember to import the required dependencies.
+</Note>
+~~~
+
+
+### With Links
+
+```mdx title="links-example.page.mdx"
+# Additional Resources
+
+<Note title="Further Reading">
+  Check out these resources for more information:
+  - <Link to="/docs/advanced-topics">Advanced Topics</Link>
+  - <Link to="/api-reference">API Reference</Link>
+  - <Link to="/examples">Code Examples</Link>
+</Note>
+```
+
+## Styling and Design
+
+### Visual Structure
+
+The Note component creates a clean, attention-grabbing layout:
+
+```txt
+┌───────────────────────────────────────────┐
+│  📝 Note Title                            │
+│                                           │
+│  This is the note content that provides   │
+│  important information to the reader.     │
+│  It can span multiple lines and contain   │
+│  various types of content.                │
+└───────────────────────────────────────────┘
+```
+
+### CSS Classes Breakdown
+
+- **Container**: `relative rounded-lg px-4 py-3 text-sm` - Positioned container with padding and rounded corners
+- **Grid Layout**: `grid grid-cols-[0_1fr]` - CSS Grid for icon and content layout
+- **Icon Support**: `has-[&>svg]:grid-cols-[calc(var(--spacing)*4)_1fr]` - Space for icon when present
+- **Icon Gap**: `has-[&>svg]:gap-x-3` - Horizontal gap between icon and content
+- **Icon Styling**: `[&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current` - Icon sizing and positioning
+- **Colors**: `bg-background text-foreground` - Theme-aware colors
+- **Border**: `border` - Subtle border for definition
+- **Responsive**: `md:-mx-1` - Horizontal margin on medium screens and up
+- **Spacing**: `mt-6` - Top margin for separation from content
+- **Title**: `col-start-2 line-clamp-1 min-h-4 font-semibold tracking-tight` - Title styling
+- **Content**: `w-full inline col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed text-card-foreground/80` - Content styling
+
+### Data Attributes
+
+- `data-slot="alert"`: Identifies the component as an alert
+- `data-variant="default"`: Allows for variant styling
+- `role="alert"`: Accessibility attribute for screen readers
+
+## Best Practices
+
+### 1. Clear, Concise Titles
+
+Use descriptive but brief titles:
+
+```mdx
+// ✅ Good
+<Note title="Security Warning">
+  Never expose API keys in client-side code.
+</Note>
+
+// ❌ Avoid
+<Note title="This is a very long title that is not concise and makes the note look cluttered">
+  Never expose API keys in client-side code.
+</Note>
+```
+
+### 2. Focused Content
+
+Keep note content focused and relevant:
+
+```mdx
+// ✅ Good
+<Note title="Performance Tip">
+  Use React.memo for expensive components to prevent unnecessary re-renders.
+</Note>
+
+// ❌ Avoid
+<Note title="Performance Tip">
+  Use React.memo for expensive components to prevent unnecessary re-renders. Also, remember that React.memo is a higher-order component that does a shallow comparison of props, and you should only use it when the component renders often with the same props, and you might also want to consider using useMemo and useCallback hooks for optimization, and don't forget about the dependency array...
+</Note>
+```
+
+### 3. Appropriate Usage
+
+Use notes for information that truly needs attention:
+
+```mdx
+// ✅ Good use cases
+<Note title="Breaking Change">
+  Version 2.0 introduces breaking changes to the API.
+</Note>
+
+<Note title="Prerequisite">
+  This guide requires basic knowledge of React hooks.
+</Note>
+
+// ❌ Overuse
+<Note title="Regular Information">
+  This is just normal paragraph content that doesn't need special attention.
+</Note>
+```
+
+### 4. Consistent Formatting
+
+Maintain consistent formatting within notes:
+
+```mdx
+// ✅ Good formatting
+<Note title="Installation Steps">
+  1. Download the package from npm
+  2. Extract the contents
+  3. Run the installation script
+</Note>
+
+// ❌ Inconsistent formatting
+<Note title="Installation Steps">
+  1-download the package
+  2) Extract
+  3 run script
+</Note>
+```
+
+## Advanced Usage
+
+### Nested Content
+
+The Note component can contain complex nested content:
+
+```mdx title="nested-content.page.mdx"
+# Complex Example
+
+<Note title="Configuration Options">
+  <div className="space-y-4">
+    <div>
+      <h4 className="font-semibold">Basic Options</h4>
+      <p>These are the fundamental settings you'll need.</p>
+    </div>
+    
+    <div>
+      <h4 className="font-semibold">Advanced Options</h4>
+      <ul className="list-disc list-inside">
+        <li>Enable experimental features</li>
+        <li>Configure custom middleware</li>
+        <li>Set up monitoring</li>
+      </ul>
+    </div>
+  </div>
+</Note>
+```
+
+### Interactive Elements
+
+Include interactive elements within notes:
+
+```mdx title="interactive.page.mdx"
+# Interactive Example
+
+<Note title="Try It Yourself">
+  <button 
+    onClick={() => alert('Hello from Note!')}
+    className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm"
+  >
+    Click Me
+  </button>
+  
+  <p className="mt-2">This button demonstrates interactive content within notes.</p>
+</Note>
+```
+
+### Code Examples with Syntax Highlighting
+
+Embed properly formatted code examples:
+
+~~~mdx title="code-syntax.page.mdx"
+# Code Syntax Example
+
+<Note title="TypeScript Example">
+  Here's a strongly typed React component:
+
+  ```tsx title="Component.tsx" showLineNumbers
+  import React from 'react';
+
+  interface Props {
+    message: string;
+    count?: number;
+  }
+
+  export function MessageComponent({ message, count = 1 }: Props) {
+    return (
+      <div>
+        {message} (shown {count} times)
+      </div>
+    );
+  }
+  ```
+
+  The component is fully typed and includes optional props.
+</Note>
+~~~
+
+## Integration Examples
+
+### Documentation Warnings
+
+Perfect for highlighting breaking changes or important warnings:
+
+```mdx title="breaking-changes.page.mdx"
+# Migration Guide
+
+<Note title="⚠️ Breaking Change">
+  Version 3.0 removes the deprecated `oldMethod()` API. Please use `newMethod()` instead.
+</Note>
+
+Follow the migration steps below...
+```
+
+### Tips and Best Practices
+
+Great for sharing pro tips:
+
+```mdx title="best-practices.page.mdx"
+# Performance Guide
+
+<Note title="💡 Pro Tip">
+  Use the React DevTools Profiler to identify performance bottlenecks in your application. Look for components that re-render frequently with expensive operations.
+</Note>
+```
+
+### Prerequisites
+
+Ideal for listing requirements:
+
+```mdx title="prerequisites.page.mdx"
+# Getting Started
+
+<Note title="📋 Prerequisites">
+  Before starting this tutorial, ensure you have:
+  - Node.js 18 or higher
+  - npm or yarn package manager
+  - Basic React knowledge
+  - Code editor (VS Code recommended)
+</Note>
+```
+
+### Troubleshooting
+
+Perfect for common issues and solutions:
+
+```mdx title="troubleshooting.page.mdx"
+# Common Issues
+
+<Note title="🔧 Troubleshooting">
+  <strong>Issue:</strong> Build fails with TypeScript errors<br/>
+  <strong>Solution:</strong> Ensure all type definitions are properly installed and your `tsconfig.json` is correctly configured.
+</Note>
+```
+
+<Note title="Tip">
+The Note component automatically adapts to your theme (light/dark mode) and provides proper accessibility features. Use it sparingly for information that truly needs to stand out.
+</Note>
+
+<Pagination 
+  previous={{
+    to: "/docs/components/pagination",
+    label: "Pagination"
+  }}
+  next={{
+    to: "/docs/resources/changelog",
+    label: "Changelog"
+  }}
+/>

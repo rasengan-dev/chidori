@@ -1,0 +1,122 @@
+---
+metadata:
+  title: Project Structure | Core
+  description: Discover the project structure of your chidori website
+toc: true
+---
+
+# Project Structure
+
+`Chidori` has a clean and easy project structure that makes you being confident with your project.
+
+As it's based on top of `Rasengan.js`, Chidori benefits from the `File-based Routing` in order to create pages simply.
+
+Here is how the project structure looks like:
+
+```txt title="Project Structure"
+my-docs/
+├── public                 # Static assets (images, fonts, icons) served directly
+├── src/
+│   ├── app/
+│   │    ├── _routes/     # File-based routing directory for pages and layouts
+│   │    └── app.router.ts # Router configuration extracted from the File-based routing
+│   ├── assets/           # Project assets (images, styles, fonts)
+│   ├── components/       # Reusable UI components
+│   ├── data/             # Static data, mock data, or content files
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utility functions and helper libraries
+│   ├── store/            # State management (Kurama)
+│   ├── styles/           # Global styles and CSS modules
+│   ├── index.ts          # Main entry point exports
+│   ├── main.tsx          # Application bootstrap file
+│   └── template.tsx      # Root template component
+├── components.json       # UI component library configuration (shadcn/ui)
+├── mdx-components.jsx    # Custom MDX component mappings
+├── package.json          # Project dependencies and scripts
+├── rasengan-env.d.ts     # Rasengan.js TypeScript environment types
+├── rasengan.config.js    # Rasengan.js framework configuration
+├── README.md             # Project documentation
+└── tsconfig.json         # TypeScript compiler configuration
+```
+
+## Key Configuration Files
+
+### `src/app/_routes/` Directory
+
+The `_routes` directory is the heart of Chidori's file-based routing system. This is where you create your pages and layouts:
+
+- **Pages**: Create `.page.mdx` or `.page.tsx` files to define routes
+- **Layouts**: Create `.layout.tsx` files to define shared layouts for nested routes
+- **Route Organization**: The directory structure directly maps to your URL structure
+- **Dynamic Routes**: Use brackets `[param]` for dynamic parameters
+- **Nested Routes**: Create subdirectories for nested route hierarchies
+
+Example structure:
+```txt
+_routes/
+├── index.page.mdx           # → /
+├── about.page.mdx           # → /about
+├── docs/
+│   ├── index.page.mdx       # → /docs
+│   ├── getting-started.page.mdx  # → /docs/getting-started
+│   └── [slug].page.mdx      # → /docs/:slug
+└── layout.tsx               # → Root layout
+```
+
+### `mdx-components.jsx`
+
+This file defines custom components that can be used within your MDX files. It extends the standard MDX component set with your custom UI components:
+
+- **Custom Components**: Map custom component names to React components
+- **Styling**: Apply consistent styling to MDX elements
+- **Code Blocks**: Configure syntax highlighting and copy functionality
+- **UI Integration**: Use your design system components within markdown
+- **Reusability**: Share components across all MDX files
+
+Common customizations include:
+- Custom code block styling with copy buttons
+- Custom callout/alert components
+- Image galleries or carousels
+- Interactive demos or examples
+
+### `rasengan.config.js`
+
+This is the main configuration file for your Chidori application. It controls various aspects of the framework behavior:
+
+- **Plugins**: Configure Rasengan.js plugins and extensions
+- **Development Server**: Set up dev server options
+- **Performance**: Enable/disable performance optimizations
+- **Aliases**: Define custom aliases for your project
+
+Example configuration:
+```js title="rasengan.config.js"
+import { defineConfig } from 'rasengan';
+import { rasengan } from 'rasengan/plugin';
+import tailwindcss from '@tailwindcss/vite';
+import mdx from '@rasenganjs/mdx/plugin';
+
+export default defineConfig(async () => {
+  return {
+    vite: {
+      plugins: [tailwindcss(), rasengan({}), mdx({ code: { keepBackground: false } })],
+    },
+  };
+});
+```
+
+<Note title="Note">
+The most important plugin in this configuration file is `mdx` coming from `@rasenganjs/mdx`. It's responsible for supporting Markdown into your `Chidori` app.
+</Note>
+
+
+
+<Pagination 
+  previous={{
+    to: "/docs/quick-start",
+    label: "Quick Start"
+  }}
+  next={{
+    to: "/docs/core/pages",
+    label: "Pages"
+  }}
+/>
