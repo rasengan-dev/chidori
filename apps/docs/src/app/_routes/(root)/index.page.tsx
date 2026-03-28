@@ -67,4 +67,9 @@ const Page: PageComponent = () => {
 	)
 }
 
+Page.metadata = {
+	title: "Welcome to Chidori",
+	description: "Chidori is a documentation framework powered by Rasengan.js to build fast, elegant, and interactive documentation websites."
+}
+
 export default Page;
