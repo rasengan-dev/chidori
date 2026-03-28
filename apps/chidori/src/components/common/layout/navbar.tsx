@@ -38,8 +38,9 @@ export const Navbar = ({ className }: Props) => {
         <nav className='hidden lg:block'>
           <ul className='flex items-center gap-1 text-foreground text-sm'>
             <Link
-              to='/docs/introduction'
+              to='https://chidori.rasengan.dev'
               className='hover:bg-muted/70 dark:hover:bg-muted/30 transition-all px-2 flex items-center rounded-md h-8'
+              target="_blank"
             >
               <li className='font-semibold'>Docs</li>
             </Link>

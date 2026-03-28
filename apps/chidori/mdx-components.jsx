@@ -169,14 +169,16 @@ export default defineMDXConfig({
       }
 
       return (
-        <code
-          className={`
-            relative
+        <div className="relative">
+          <code
+            className={`
+            w-full
             font-mono
             font-normal
             text-[0.9rem]
             py-3
             break-words
+            overflow-auto
 
             bg-(--code-block-bg)!
 
@@ -206,16 +208,17 @@ export default defineMDXConfig({
 
             ${className}
           `}
-          {...props}
-        >
-          {children}
+            {...props}
+          >
+            {children}
 
+          </code>
           <div onClick={() => copyToClipboard(children)} className="absolute top-2 right-2 text-foreground/70 hover:text-foreground transition-all rounded-sm p-2 hover:bg-muted">
             {
               isCopied ? <Check size={14} /> : <Copy size={14} />
             }
           </div>
-        </code>
+        </div>
       );
     },
 
@@ -280,8 +283,8 @@ export default defineMDXConfig({
                     href={`#${item.anchor.id}`}
                     className={
                       activeId === item.anchor.id
-                        ? 'text-foreground font-bold'
-                        : 'cursor-pointer text-foreground/70'
+                        ? 'text-foreground font-bold transition-all'
+                        : 'cursor-pointer text-foreground/70 hover:text-foreground transition-all'
                     }
                   >
                     {item.anchor.text}
@@ -295,8 +298,8 @@ export default defineMDXConfig({
                           href={`#${child.anchor.id}`}
                           className={
                             activeId === child.anchor.id
-                              ? 'text-foreground font-bold'
-                              : 'cursor-pointer text-foreground/70'
+                              ? 'text-foreground font-bold transition-all'
+                              : 'cursor-pointer text-foreground/70 hover:text-foreground transition-all'
                           }
                         >
                           {child.anchor.text}
