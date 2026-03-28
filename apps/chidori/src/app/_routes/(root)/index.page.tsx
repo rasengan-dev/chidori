@@ -4,8 +4,6 @@ import { Github } from "lucide-react";
 import { Link, PageComponent } from "rasengan";
 
 
-const registryUrl = import.meta.env["RASENGAN_REGISTRY_URL"] || "https://registry.rasengan.dev"
-
 const Page: PageComponent = () => {
 	const { isDark } = useTheme();
 
@@ -68,6 +66,11 @@ const Page: PageComponent = () => {
 			
 		</section>
 	)
+}
+
+Page.metadata = {
+	title: "Welcome to Chidori",
+	description: "Chidori is a documentation framework powered by Rasengan.js to build fast, elegant, and interactive documentation websites."
 }
 
 export default Page;
