@@ -141,7 +141,7 @@ The documentation is built with MDX and includes:
 
 ## 📄 License
 
-This project is licensed under the ISC License.
+This project is licensed under the MIT License.
 
 ## 🔗 Links
 
